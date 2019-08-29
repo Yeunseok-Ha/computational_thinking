@@ -12,23 +12,31 @@ int main (void)
 
 	double *x = (double*)malloc(sizeof(double)*n);
 	int *g = (int*)malloc(sizeof(int)*n);
+	int *valid = (int*)malloc(sizeof(int)*n);
 
 	//get location of each buildings and its included people
 	for(i = 1; i <= n; i++){
 		scanf("%d %lf", &g[i-1], &x[i-1]);
+		valid[i-1] = 0;
 	}
 
 	for(i = 1; i <= n; i++){
-		for(s = x[i-1]-(2*k); s <= x[i-1]+(2*k); s++){
-			for(j = 1; j <= n; j++){
-				if(s >= 0 && s == x[j-1]){
-					sum_g += g[j-1];
+		if(valid[i-1] == 0){
+			for(s = x[i-1]-(2*k); s <= x[i-1]+(2*k); s++){
+				for(j = 1; j <= n; j++){
+					if(s >= 0 && s == x[j-1]){
+						sum_g += g[j-1];
+						valid[j-1] = 1;
+					}
 				}
 			}
+			if(sum_g > max_g)
+				max_g = sum_g;
+			printf("sum_g %lf\n",sum_g);
+			printf("max_g %lf\n",max_g);
+			sum_g = 0;
 		}
-		if(sum_g > max_g)
-			max_g = sum_g;
-		sum_g = 0;
+		
 	}
 	printf("%.0lf", max_g);
 	/*
