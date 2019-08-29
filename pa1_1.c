@@ -5,8 +5,9 @@
 int main (void)
 {
 	int n, k, i, s, j;
-	double sum_g_L = 0;
-	double sum_g_R = 0;
+	double min_x = MAX; 
+	double max_x = 0;
+	double sum_g = 0;
 	double max_g = 0;
 
 	//get numbers of buildings and waling distance
@@ -18,30 +19,27 @@ int main (void)
 	//get location of each buildings and its included people
 	for(i = 1; i <= n; i++){
 		scanf("%d %lf", &g[i-1], &x[i-1]);
+		if(x[i-1] > max_x)
+			max_x = x[i-1];
+		if(x[i-1] < min_x)
+			min_x = x[i-1];
+
 	}
 
-	for(i = 1; i <= n; i++){
-		for(s = x[i-1]-(2*k); s <= x[i-1]; s++){
+	for(i = min_x + k; i <= max_x - k; i++){
+		for(s = x[i-1]-(k); s <= x[i-1]+(k); s++){
 			for(j = 1; j <= n; j++){
 				if(s >= 0 && s == x[j-1]){
-					sum_g_L += g[j-1];
-					}
+					sum_g += g[j-1];
+				}
 			}
 		}
-		for(s = x[i-1]; s <= x[i-1]+(2*k); s++){
-			for(j = 1; j <= n; j++){
-				if(s < MAX && s == x[j-1])
-					sum_g_R += g[j-1];
-			}
-		}
-			if(sum_g_L > max_g)
-				max_g = sum_g_L;
-			if(sum_g_R > max_g)
-				max_g = sum_g_R;
-			//printf("from %lf, sum_g %lf\n",x[i-1], sum_g);
-			//printf("max_g %lf\n",max_g);
-			sum_g_L = 0;
-			sum_g_R = 0;
+			if(sum_g > max_g)
+				max_g = sum_g;
+			printf("from %lf, sum_g %lf\n",x[i-1], sum_g);
+			printf("max_g %lf\n",max_g);
+			sum_g = 0;
+		
 	}
 	printf("%.0lf", max_g);
 	/*
