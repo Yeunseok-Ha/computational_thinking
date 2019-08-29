@@ -32,8 +32,8 @@ int main (void)
 			}
 			if(sum_g > max_g)
 				max_g = sum_g;
-			printf("sum_g %lf\n",sum_g);
-			printf("max_g %lf\n",max_g);
+			//printf("sum_g %lf\n",sum_g);
+			//printf("max_g %lf\n",max_g);
 			sum_g = 0;
 		}
 		
