@@ -16,12 +16,12 @@ int main (void)
 	//get numbers of buildings and waling distance
 	scanf("%d %d", &n, &k);
 	
-	long *x = (long*)malloc(sizeof(long)*n);
+	int *x = (int*)malloc(sizeof(long)*n);
 	int *g = (int*)malloc(sizeof(int)*n);
 	
 	//get location of each buildings and its included people
 	for(i = 1; i <= n; i++){
-		scanf("%d %ld", &g[i-1], &x[i-1]);
+		scanf("%d %d", &g[i-1], &x[i-1]);
 		if(min_x > x[i-1])
 			min_x = x[i-1];
 //		if(max_x < x[i-1])
@@ -30,12 +30,13 @@ int main (void)
 
 	for(i = 1; i <= n; i++){
 		for(s = x[i-1]-(2*k); s <= x[i-1]; s++){
+			if(s < min_x) break;
 			for(j = 1; j <= n; j++){
-				if(s >= min_x && s == x[j-1]){
+				if(s == x[j-1]){
 					sum_g_L += (long)g[j-1];
-				//	printf("%ld\n", sum_g_L);
+				//	printf("s:%ld x[j-1]:%d x[i-1]:%d sum_g_L:%ld\n",s,x[j-1],x[i-1], sum_g_L);
 				}
-				//printf("%ld : %ld : %ld : %ld \n", s, x[j-1], x[i-1], sum_g_L);
+			//	printf("%ld : %d : %d : %ld \n", s, x[j-1], x[i-1], sum_g_L);
 			}
 			//printf("%ld : %ld : %ld \n", s, x[i-1], sum_g_L);
 		}
