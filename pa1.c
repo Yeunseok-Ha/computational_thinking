@@ -36,8 +36,9 @@ int main (void)
 		}
 		for(s = x[i-1]; s <= x[i-1]+(2*k); s++){
 			for(j = 1; j <= n; j++){
-				if(s < max_x && s == x[j-1])
+				if(s < max_x && s == x[j-1]){
 					sum_g_R += g[j-1];
+				}
 			}
 		}
 			if(sum_g_L > max_g)
