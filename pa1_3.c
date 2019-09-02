@@ -13,7 +13,7 @@ void merge(struct building list[], int left, int mid, int right);
 void merge_sort(struct building list[], int left, int right);
 int main (void)
 {
-	int k, i, j, n, to;
+	int k, i, j, n, from, to;
 	int sum_g = 0;
 	int max_g = 0;
 	int s = 0;
@@ -29,10 +29,11 @@ int main (void)
 //	struct building* sorted = malloc(sizeof(struct building)*n);
 	
 	merge_sort(b, 0, n-1);
-	for(i = 0; i < n; i++)
-		printf("x : %d g : %d\n", b[i].x, b[i].g);
-	
-	for(i = 0; i < n; i++){
+//	for(i = 0; i < n; i++)
+//		printf("x : %d g : %d\n", b[i].x, b[i].g);
+	from = 0;
+	i = 0;
+	while(i < n){
 		s = b[i].x;
 		//from = i;
 		to = i;
@@ -40,7 +41,7 @@ int main (void)
 			sum_g += b[to].g;
 			to++;
 			s = b[to].x;
-			//printf("a\n");
+			printf("a\n");
 		}
 		
 		if(sum_g > max_g){
@@ -48,6 +49,12 @@ int main (void)
 		}
 //		printf("sum_g : %d, max_g : %d\n",sum_g, max_g);
 		sum_g = 0;
+//		i++;
+		if(b[i].x+(2*k) > b[n-1].x)
+			break;
+		else
+			i++;
+		
 	}
 
 	printf("%d", max_g);
