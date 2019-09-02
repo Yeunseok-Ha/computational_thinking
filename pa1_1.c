@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAX 10000000000
 
 struct building{
 	int g;
@@ -11,13 +10,13 @@ struct building{
 void Swap(struct building* arr, int a, int b);
 int Partition(struct building* arr, int left, int right);
 void QuickSort(struct building* arr, int left, int right);
-
+int binarySearch(int building*arr, int l, int r, int x);
 int main (void)
 {
 	int k, i, j, n, to;
-	long sum_g = 0;
-	long max_g = 0;
-	long s = 0;
+	int sum_g = 0;
+	int max_g = 0;
+	int s = 0;
 
 	struct building* b;
 	//get numbers of buildings and waling distance
@@ -27,7 +26,7 @@ int main (void)
 
 	//get location of each buildings and its included people
 	for(i = 0; i < n; i++){
-		scanf("%d %ld", &b[i].g, &b[i].x);
+		scanf("%d %d", &b[i].g, &b[i].x);
 	}
 
 	QuickSort(b,0,n-1);
@@ -39,18 +38,20 @@ int main (void)
 		//from = i;
 		to = i;
 		while(s >= b[i].x && s <= b[i].x + (2*k) && s <= b[n-1].x ){
-			if(s == b[to].x){
-				sum_g += (long)b[to].g;
-				to++;
-			}
-			s++;
+			sum_g += b[to].g;
+			++to;
+			s = b[to].x;
 		}
-		if(sum_g > max_g)
+		
+		if(sum_g > max_g){
 			max_g = sum_g;
+		//	printf("%ld\n",max_g);
+		}
+		printf("sum_g : %ld, max_g : %ld\n",sum_g, max_g);
 		sum_g = 0;
 	}
 
-	printf("%ld", max_g);
+	printf("%d", max_g);
 	
 	free(b);
 	return 0;
@@ -93,3 +94,15 @@ void QuickSort(struct building* arr, int left, int right)
 	}
 }
  
+int binarySearch(struct building* arr, int l, int r, int x) 
+{ 
+	if (r >= l) { 
+		int mid = l + (r - l) / 2; 
+		if (arr[mid] == x) 
+			return mid; 
+		if (arr[mid] > x) 
+		        return binarySearch(arr, l, mid - 1, x); 
+		return binarySearch(arr, mid + 1, r, x); 
+	} 
+	return -1; 
+} 
