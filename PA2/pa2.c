@@ -15,9 +15,9 @@ int main (void)
 	int max_carriers = 0;
 	int bag[MAX];
 
-	scanf("%d ", &max_weight);
+	scanf("%d", &max_weight);
 
-	
+	i = 0;	
 	while( scanf("%d", &bag[i]) != EOF){
 		i++;
 	}
@@ -26,7 +26,7 @@ int main (void)
 	merge_sort(bag, 0, n-1);
 	i = 0;
 	j = n-1;
-	while(i != j){
+	while(i < j){
 		if(bag[i] + bag[j] <= max_weight){
 			max_carriers++;
 			i++;
