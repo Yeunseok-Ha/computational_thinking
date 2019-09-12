@@ -17,7 +17,6 @@ struct Graph{
 	struct Edge* railroad;
 };
 
-//int dijkstra(struct Graph* graph, int source, int target, int fuel);
 void graphCreation(struct Graph* g, int V, int E);
 void graphConstruct(struct Graph* g, int index, int from, int to);
 int BFS(struct Graph* g, int source, int target);
@@ -27,40 +26,30 @@ int main(void)
 	int min_fuel, sum;
 	int i, j, temp, p, q, r, N, M;
 	int from, to;
-//	struct Graph* alpha = (struct Graph*) malloc(sizeof(struct Graph));
-//	struct Graph* beta = (struct Graph*) malloc(sizeof(struct Graph));
-//	struct Graph* connect = (struct Graph*) malloc(sizeof(struct Graph));
 	struct Graph* map = (struct Graph*) malloc(sizeof(struct Graph));
 
 	scanf("%d %d %d %d %d",&p, &q, &r, &N, &M);
 	
-//	graphCreation(alpha, N, M);
-//	graphCreation(beta, N, M);
-//	graphCreation(connect, N, M);
 	graphCreation(map, N, M);
 
 	for(i = 0; i < M; i++){
 		scanf("%d %d", &from, &to);
-//		graphConstruct(alpha, i, from, to, p);
-//		graphConstruct(beta, i, from, to, q);
-//		graphConstruct(connect, i, from, to, r);
 		graphConstruct(map, i, from, to);
 	}
-	min_fuel = (BFS(map, 0, N-1) *p) +(BFS(map, 1, N-1)*q);
+	min_fuel = (BFS(map, 0, N-1)*p) +(BFS(map, 1, N-1)*q);
 
-//	min_fuel = dijkstra(map, 0, N-1, p) + dijkstra(map, 1, N-1, q);
-//	printf("%d\n", min_fuel);
 	for(i = 0; i < N; i++){
-		if((map->reachable_a[i]==1 && map->reachable_b[i])){
-			sum = (map->reachable_a[i]*p) + (map->reachable_b[i]*q);
-			temp = ((map->reachable_a[N-1] - map->reachable_a[i])) * r;
-			sum += temp;
+		if((map->reachable_a[i] ==1 && map->reachable_b[i])){
+			sum = (map->reachable_a[i]*p) + (map->reachable_b[i]*q) + (BFS(map,i,N-1)*r);
+//			temp = ((map->reachable_a[N-1] - map->reachable_a[i])) * r;
+//			sum += temp;
+//			printf("%d\n", sum);
 			if(sum < min_fuel)
 				min_fuel = sum;
 		} else if(map->reachable_a[i] && map->reachable_b[i] == 1){
-			sum = (map->reachable_a[i]*p) + (map->reachable_b[i]*q);
-			temp = ((map->reachable_b[N-1] - map->reachable_b[i])) * r;
-			sum += temp;
+			sum = (map->reachable_a[i]*p) + (map->reachable_b[i]*q) + (BFS(map,i,N-1)*r);
+//			temp = ((map->reachable_b[N-1] - map->reachable_b[i])) * r;
+//			sum += temp;
 //			printf("%d\n", sum);
 			if(sum < min_fuel)
 				min_fuel = sum;
@@ -139,8 +128,8 @@ int BFS(struct Graph* g, int source, int target)
 			}
 		}
 		v_visited[u] = visited;
-		if(v_visited[target] > 0)
-			break;
+//		if(v_visited[target] > 0)
+//			break;
 	}
 //	for(i = 0; i<V; i++)
 //		printf("%d\t",g->reachable_a[i]);
