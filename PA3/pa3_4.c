@@ -7,6 +7,9 @@
 #define waiting 1
 #define visited 2
 
+struct AdjMat{
+	int adj_mat**;
+};
 struct Edge{
 	int source, destination;
 };
@@ -17,8 +20,8 @@ struct Graph{
 	struct Edge* railroad;
 };
 
-void graphCreation(struct Graph* g, int V, int E);
-void graphConstruct(struct Graph* g, int index, int from, int to);
+void graphCreation(struct AdjMat** adj_mat, int V);
+void graphConstruct(struct AdjMat** adj_mat, int index, int from, int to);
 int BFS(struct Graph* g, int source, int target);
 
 int main(void)
@@ -26,11 +29,11 @@ int main(void)
 	int min_fuel, sum;
 	int i, j, temp, p, q, r, N, M;
 	int from, to;
-	struct Graph* map = (struct Graph*) malloc(sizeof(struct Graph));
-
+//	struct Graph* map = (struct Graph*) malloc(sizeof(struct Graph));
+	struct AdjMat** map;
 	scanf("%d %d %d %d %d",&p, &q, &r, &N, &M);
 	
-	graphCreation(map, N, M);
+	graphCreation(map, N;
 
 	for(i = 0; i < M; i++){
 		scanf("%d %d", &from, &to);
@@ -55,16 +58,22 @@ int main(void)
 	return 0;
 }
 
-void graphCreation(struct Graph* g, int V, int E)
+void graphCreation(struct AdjMat** adj_mat, int V)
 {
-	g->cities = V;
-	g->rails = E;
-	g->railroad = (struct Edge*) malloc(g->rails * sizeof(struct Edge));
-	g->reachable_a = (int*)malloc(V * sizeof(int));
-	g->reachable_b = (int*)malloc(V * sizeof(int));
+	adj_mat = malloc(V*sizeof(int*));
+	for(int i = 0; i < V; i++)
+		adj_mat[i] = malloc(V*sizeof(int));
+
+//	g->cities = V;
+//	g->rails = E;
+//	g->railroad = (struct Edge*) malloc(g->rails * sizeof(struct Edge));
+//	g->reachable_a = (int*)malloc(V * sizeof(int));
+//	g->reachable_b = (int*)malloc(V * sizeof(int));
 }
-void graphConstruct(struct Graph* g, int index, int from, int to)
+void graphConstruct(struct AdjMat** adj_mat, int index, int from, int to)
 {
+	adj_mat[from-1][to-1] = 1;
+	adj_mat[to-1][from-1] = 1;
 	g->railroad[index].source = from-1;
 	g->railroad[index].destination = to-1;
 //	g->railroad[index].fuel = weight;
