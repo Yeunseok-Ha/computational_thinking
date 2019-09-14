@@ -41,7 +41,7 @@ int bfs(struct Graph* graph, int startVertex, int finishVertex);
 int main(void)
 {
 	int min_fuel, sum;
-	int i, j, temp, p, q, r, N, M;
+	int i, j, k, temp, p, q, r, N, M;
 	int from, to;
 	//struct Graph* map = (struct Graph*) malloc(sizeof(struct Graph));
 
@@ -55,10 +55,15 @@ int main(void)
 	}
 	min_fuel = (bfs(map, 0, N-1)*p) +(bfs(map, 1, N-1)*q);
 	
-	for(i = 0; i < N; i++){
-		if((map->storePare_a[i] != map->storePare_b[i])){
-			temp = bfs(map, i, N-1)*r;
-			sum = (map->reachable_a[i]*p) + (map->reachable_b[i]*q) + temp;
+	for(i = 2; i < N; i++){
+		if((map->storePare_a[i] == map->storePare_b[i])){
+			j = i;
+			while(map->storePare_a[j] == map->storePare_b[j]){
+				k = j;
+				j = map->storePare_a[j];
+			}
+			temp = bfs(map, j, N-1)*r;
+			sum = (map->reachable_a[j]*p) + (map->reachable_b[j]*q) + temp;
 			if(sum < min_fuel)
 				min_fuel = sum;
 			//printf("%dth temp : %d sum : %d\n ", i,temp, sum);
@@ -148,6 +153,10 @@ struct Graph* createGraph(int vertices)
 	for (i = 0; i < vertices; i++) {
 		graph->adjLists[i] = NULL;
 		graph->visited[i] = 0;
+		graph->reachable_a[i] = -1;
+		graph->reachable_b[i] = -1;
+		graph->storePare_a[i] = -1;
+		graph->storePare_b[i] = -1;
 	}
 	
 	return graph;
