@@ -31,7 +31,7 @@ struct Graph
 	int numVertices;
 	struct node** adjLists;
 	int* visited;
-	int *reachable_a, *reachable_b;
+	int *reachable_a, *reachable_b, *storePare_a, *storePare_b;
 	int temp;
 };
 struct Graph* createGraph(int vertices);
@@ -54,9 +54,9 @@ int main(void)
 		addEdge(map, from-1, to-1);
 	}
 	min_fuel = (bfs(map, 0, N-1)*p) +(bfs(map, 1, N-1)*q);
-
+	
 	for(i = 0; i < N; i++){
-		if((map->reachable_a[i] && map->reachable_b[i])){
+		if((map->storePare_a[i] != map->storePare_b[i])){
 			temp = bfs(map, i, N-1)*r;
 			sum = (map->reachable_a[i]*p) + (map->reachable_b[i]*q) + temp;
 			if(sum < min_fuel)
@@ -94,22 +94,29 @@ int bfs(struct Graph* graph, int startVertex, int finishVertex) {
 			int adjVertex = temp->vertex;
 			if(graph->visited[adjVertex] == 0){
 				storeDist[adjVertex] = storeDist[currentVertex]+1;
-				if(startVertex == 0)
+				if(startVertex == 0){
 					graph->reachable_a[adjVertex] = storeDist[adjVertex];
-				else if(startVertex == 1)
+					graph->storePare_a[adjVertex] = currentVertex;
+				}
+				else if(startVertex == 1){
 					graph->reachable_b[adjVertex] = storeDist[adjVertex];
+					graph->storePare_b[adjVertex] = currentVertex;
+				}
 				graph->visited[adjVertex] = 1;
 				enqueue(q, adjVertex);
 			}
-			if(adjVertex == finishVertex)
-				break;
-			else
+//			if(adjVertex == finishVertex)
+//				break;
+//			else
 				temp = temp->next;
 		}
 	}
-//	printf("from %d : ",startVertex);
+//	printf("from %d : \n",startVertex);
 //	for(int i = 0; i < finishVertex+1; i++)
-//		printf("%d \t", storeDist[i]);
+//		printf("%d \t", graph->storePare_a[i]);
+//	printf("\n");
+//	for(int i = 0; i < finishVertex+1; i++)
+//		printf("%d \t", graph->storePare_b[i]);
 //	printf("\n");
 	returnDist = storeDist[finishVertex];
 	free(q);
@@ -134,6 +141,8 @@ struct Graph* createGraph(int vertices)
 	graph->visited = malloc(vertices * sizeof(int));
 	graph->reachable_a = malloc(vertices * sizeof(int));
 	graph->reachable_b = malloc(vertices * sizeof(int));
+	graph->storePare_a = malloc(vertices * sizeof(int));
+	graph->storePare_b = malloc(vertices * sizeof(int));
 			 
 	int i;
 	for (i = 0; i < vertices; i++) {

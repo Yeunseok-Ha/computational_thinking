@@ -30,11 +30,12 @@ int main(void)
 
 	scanf("%d %d %d %d %d",&p, &q, &r, &N, &M);
 	
-	graphCreation(map, N, M);
+	graphCreation(map, N, 2*M);
 
 	for(i = 0; i < M; i++){
 		scanf("%d %d", &from, &to);
 		graphConstruct(map, i, from, to);
+		graphConstruct(map, i+M, to, from);
 	}
 	min_fuel = (BFS(map, 0, N-1)*p) +(BFS(map, 1, N-1)*q);
 
@@ -114,9 +115,9 @@ int BFS(struct Graph* g, int source, int target)
 		if(v_visited[target] > 0)
 			break;
 	}
-//	for(i = 0; i<V; i++)
-//		printf("%d\t",g->reachable_a[i]);
-//	printf("\n");
+	for(i = 0; i<V; i++)
+		printf("%d\t", StoreDist[i]);
+	printf("\n");
 //	for(i = 0; i<V; i++)
 //		printf("%d\t",g->reachable_b[i]);
 //	printf("\n");
