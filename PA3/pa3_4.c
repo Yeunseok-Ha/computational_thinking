@@ -3,207 +3,234 @@
 #include <memory.h>
 
 #define INF 0x7fffffff
-#define initial 0
-#define waiting 1
-#define visited 2
+#define SIZE 40000
+//#define initial 0
+//#define waiting 1
+//#define visited 2
 
-struct AdjMat{
-	int adj_mat**;
-};
-struct Edge{
-	int source, destination;
-};
-
-struct Graph{
-	int cities, rails;
-	int* reachable_a, *reachable_b;
-	struct Edge* railroad;
+struct queue {
+	int items[SIZE];
+	int front;
+	int rear;
 };
 
-void graphCreation(struct AdjMat** adj_mat, int V);
-void graphConstruct(struct AdjMat** adj_mat, int index, int from, int to);
-int BFS(struct Graph* g, int source, int target);
-
+struct queue* createQueue();
+void enqueue(struct queue* q, int);
+int dequeue(struct queue* q);
+void display(struct queue* q);
+int isEmpty(struct queue* q);
+void printQueue(struct queue* q);
+struct node
+{
+	int vertex;
+	struct node* next;
+};
+struct node* createNode(int);
+struct Graph
+{
+	int numVertices;
+	struct node** adjLists;
+	int* visited;
+	int *adj_count, *reachable_a, *reachable_b, *storePare_a, *storePare_b, *fromDst;
+	int temp;
+};
+struct Graph* createGraph(int vertices);
+void addEdge(struct Graph* graph, int src, int dest);
+void printGraph(struct Graph* graph);
+void bfs(struct Graph* graph, int startVertex);
 int main(void)
 {
 	int min_fuel, sum;
-	int i, j, temp, p, q, r, N, M;
+	int i, j, p, q, r, N, M;
 	int from, to;
-//	struct Graph* map = (struct Graph*) malloc(sizeof(struct Graph));
-	struct AdjMat** map;
+	//struct Graph* map = (struct Graph*) malloc(sizeof(struct Graph));
+
 	scanf("%d %d %d %d %d",&p, &q, &r, &N, &M);
 	
-	graphCreation(map, N;
+	struct Graph *map = createGraph(N);
+//	int *temp = malloc(sizeof(int) * N);
 
 	for(i = 0; i < M; i++){
 		scanf("%d %d", &from, &to);
-		graphConstruct(map, i, from, to);
+		addEdge(map, from-1, to-1);
 	}
-	min_fuel = (BFS(map, 0, N-1)*p) +(BFS(map, 1, N-1)*q);
-
-	for(i = 0; i < N; i++){
-		if((map->reachable_a[i] && map->reachable_b[i])){
-			sum = (map->reachable_a[i]*p) + (map->reachable_b[i]*q) + (BFS(map,i,N-1)*r);
-			if(sum < min_fuel)
-				min_fuel = sum;
+	bfs(map, 0);
+	bfs(map, 1);
+	bfs(map, N-1);
+	min_fuel = (map->reachable_a[N-1]*p) + (map->reachable_b[N-1]*q);
+	
+	for(i = 2; i < N; i++){
+		if((map->storePare_a[i] == map->storePare_b[i])){
+			j = i;
+			while(map->storePare_a[j] == map->storePare_b[j]){
+				j = map->storePare_a[j];
+			}
+			if(map->adj_count[j] > 2){
+				sum = (map->reachable_a[j]*p) + (map->reachable_b[j]*q) + (map->fromDst[j]*r);
+				if(sum < min_fuel)
+					min_fuel = sum;
+			}
+			//printf("%dth temp : %d sum : %d\n ", i,temp, sum);
 		}
 	}
 	
 	printf("%d", min_fuel);
-	
-	free(map->railroad);
-	free(map->reachable_a);
-	free(map->reachable_b);
 	free(map);
 	return 0;
+
 }
 
-void graphCreation(struct AdjMat** adj_mat, int V)
-{
-	adj_mat = malloc(V*sizeof(int*));
-	for(int i = 0; i < V; i++)
-		adj_mat[i] = malloc(V*sizeof(int));
+void bfs(struct Graph* graph, int startVertex) {
+	int *storeDist = malloc(sizeof(int)*(graph->numVertices));
+	struct queue* q = createQueue();
+//	int returnDist;
 
-//	g->cities = V;
-//	g->rails = E;
-//	g->railroad = (struct Edge*) malloc(g->rails * sizeof(struct Edge));
-//	g->reachable_a = (int*)malloc(V * sizeof(int));
-//	g->reachable_b = (int*)malloc(V * sizeof(int));
-}
-void graphConstruct(struct AdjMat** adj_mat, int index, int from, int to)
-{
-	adj_mat[from-1][to-1] = 1;
-	adj_mat[to-1][from-1] = 1;
-	g->railroad[index].source = from-1;
-	g->railroad[index].destination = to-1;
-//	g->railroad[index].fuel = weight;
-}
-int BFS(struct Graph* g, int source, int target)
-{
-	int V = g->cities;
-	int E = g->rails;
-	int *StoreDist = malloc(sizeof(int)*V);
-	int *StorePred = malloc(sizeof(int)*V);
-	int *v_visited = malloc(sizeof(int)*V);
-	int *queue = malloc(sizeof(int)*V);
-	int i, u, v, front, rear, min_dist;
-
-	for(i = 0; i<V; i++){
-		StoreDist[i] = INF;
-		StorePred[i] = -1;
-		v_visited[i] = initial;
-		queue[i] = -1;
+	for(int i = 0; i < graph->numVertices; i++){
+		graph->visited[i]=0;
+		storeDist[i] = 0;
 	}
-	StoreDist[source] = 0;
-	v_visited[source] = waiting;
-	front = 0;
-	rear = 0;
-	queue[rear] = source;
-	rear++;
+	graph->visited[startVertex] = 1;
+	enqueue(q, startVertex);
 
-	while(front != rear){
-		u = queue[front];
-		front++;
-
-		for(i = 0; i < E; i++){
-			v = g->railroad[i].destination;
-			if (u == g->railroad[i].source && v_visited[v] == initial){
-				v_visited[v] = waiting;
-				StoreDist[v] = StoreDist[u] +1;
-				if(source == 0)
-					g->reachable_a[v] = StoreDist[v];
-				else if(source == 1)
-					g->reachable_b[v] = StoreDist[v];
-				StorePred[v] = u;
-				queue[rear] = v;
-				rear++;
-			}
-		}
-		v_visited[u] = visited;
-		if(v_visited[target] > 0)
-			break;
-	}
-//	for(i = 0; i<V; i++)
-//		printf("%d\t",g->reachable_a[i]);
-//	printf("\n");
-//	for(i = 0; i<V; i++)
-//		printf("%d\t",g->reachable_b[i]);
-//	printf("\n");
-
-	min_dist = StoreDist[target];
-	free(StoreDist);
-	free(StorePred);
-	free(v_visited);
-	free(queue);
-
-	return min_dist;
-}
-
-/*
-int dijkstra(struct Graph* graph, int source, int target, int fuel)
-{
-	int V = graph->cities;
-	int E = graph->rails;
-	int *StoreFuel = malloc(sizeof(int)*V);
-	int *StorePred = malloc(sizeof(int)*V);
-	int *visited = malloc(sizeof(int)*V);
-	int i, j, count, minFuel, minIndex;
-
-	//initialize 
-	for (i = 0; i<V; i++){
-		StoreFuel[i] = INF;
-		visited[i] = 0;
-	}
-	
-	StoreFuel[source] = 0;
-	count = 1;
-	
-	while (count <= V-1){
-		minFuel = INF;
-	
-		//minIndex gives the node at minimum distance
-		for (i = 0; i < V; i++) {
-			if ((!visited[i]) && StoreFuel[i] < minFuel) {
-				minFuel = StoreFuel[i];
-				minIndex = i;
-			}
-		}
-		//turn minIndex's node to visited
-		visited[minIndex] = 1;
-
-		for (j = 0; j < E; j++) {
-			int u = graph->railroad[j].source;
-			int v = graph->railroad[j].destination;
-			//int fuel = graph->railroad[j].fuel;
-			//printf("%d %d %d\n",u,v,fuel);
-			if ((!visited[v]) && u == minIndex && minFuel + fuel < StoreFuel[v]){
-				StoreFuel[v] = StoreFuel[u] + fuel;
-				if(source == 0){
-					graph->sum_fuel_a[v] = StoreFuel[v];
-					graph->reachable_a[v] = graph->reachable_a[u] +1;
-				} else if(source ==1){
-					graph->sum_fuel_b[v] = StoreFuel[v];
-					graph->reachable_b[v] = graph->reachable_b[u] +1;
+	while(!isEmpty(q)){
+//		printQueue(q);
+		int currentVertex = dequeue(q);
+//		printf("Visited %d\n", currentVertex);
+		
+		struct node* temp = graph->adjLists[currentVertex];
+						           
+		while(temp) {
+			int adjVertex = temp->vertex;
+			if(graph->visited[adjVertex] == 0){
+				storeDist[adjVertex] = storeDist[currentVertex]+1;
+				if(startVertex == 0){
+					graph->reachable_a[adjVertex] = storeDist[adjVertex];
+					graph->storePare_a[adjVertex] = currentVertex;
 				}
+				else if(startVertex == 1){
+					graph->reachable_b[adjVertex] = storeDist[adjVertex];
+					graph->storePare_b[adjVertex] = currentVertex;
+				}else
+					graph->fromDst[adjVertex] = storeDist[adjVertex];
+				graph->visited[adjVertex] = 1;
+				enqueue(q, adjVertex);
 			}
+//			if(adjVertex == finishVertex)
+//				break;
+//			else
+				temp = temp->next;
 		}
-		//printf(" ");
-		count++;
 	}
-//	for(i = 0; i < V; i++)
-//		printf("%d\t", graph->sum_fuel_a[i]);
+//	printf("from %d : \n",startVertex);
+//	for(int i = 0; i < finishVertex+1; i++)
+//		printf("%d \t", graph->storePare_a[i]);
 //	printf("\n");
-//	for(i = 0; i < V; i++)
-//		printf("%d\t", graph->sum_fuel_b[i]);
+//	for(int i = 0; i < finishVertex+1; i++)
+//		printf("%d \t", graph->storePare_b[i]);
 //	printf("\n");
-
-//	printResult(StoreFuel, V);
-	minFuel = StoreFuel[target];
-	
-	free(StoreFuel);
-	free(StorePred);
-	free(visited);
-
-	return minFuel;
+//	returnDist = storeDist[finishVertex];
+	free(q);
+	free(storeDist);
+//	return returnDist;
 }
-*/
+ 
+struct node* createNode(int v)
+{
+	struct node* newNode = malloc(sizeof(struct node));
+	newNode->vertex = v;
+	newNode->next = NULL;
+	return newNode;
+}
+ 
+struct Graph* createGraph(int vertices)
+{
+	struct Graph* graph = malloc(sizeof(struct Graph));
+	graph->numVertices = vertices;
+		 
+	graph->adjLists = malloc(vertices * sizeof(struct node*));
+	graph->visited = malloc(vertices * sizeof(int));
+	graph->reachable_a = malloc(vertices * sizeof(int));
+	graph->reachable_b = malloc(vertices * sizeof(int));
+	graph->storePare_a = malloc(vertices * sizeof(int));
+	graph->storePare_b = malloc(vertices * sizeof(int));
+	graph->adj_count = malloc(vertices * sizeof(int));
+	graph->fromDst = malloc(vertices * sizeof(int));
+
+	int i;
+	for (i = 0; i < vertices; i++) {
+		graph->adjLists[i] = NULL;
+		graph->visited[i] = 0;
+		graph->adj_count[i] = 0;
+		graph->reachable_a[i] = -1;
+		graph->reachable_b[i] = -1;
+		graph->storePare_a[i] = -1;
+		graph->storePare_b[i] = -1;
+		graph->fromDst[i] = -1;
+	}
+	
+	return graph;
+}
+ 
+void addEdge(struct Graph* graph, int src, int dest)
+{
+	// Add edge from src to dest
+	struct node* newNode = createNode(dest);
+	newNode->next = graph->adjLists[src];
+	graph->adjLists[src] = newNode;
+	graph->adj_count[src]++;
+	              
+	// Add edge from dest to src
+	newNode = createNode(src);
+	newNode->next = graph->adjLists[dest];
+	graph->adjLists[dest] = newNode;
+	graph->adj_count[dest]++;
+}
+struct queue* createQueue() {
+        struct queue* q = malloc(sizeof(struct queue));
+	q->front = -1;
+	q->rear = -1;
+	return q;
+}
+int isEmpty(struct queue* q) {
+	if(q->rear == -1) 
+		return 1;
+	else 
+	        return 0;
+}
+void enqueue(struct queue* q, int value){
+//        if(q->rear == SIZE-1)
+//	        printf("\nQueue is Full!!");
+//	else {
+	        if(q->front == -1)
+		        q->front = 0;
+                q->rear++;
+                q->items[q->rear] = value;
+//	}
+}
+int dequeue(struct queue* q){
+        int item;
+//        if(isEmpty(q)){
+//                printf("Queue is empty");
+//        	item = -1;
+//	}
+//	else{
+	        item = q->items[q->front];
+	        q->front++;
+		if(q->front > q->rear){
+//		        printf("Resetting queue");
+	                q->front = q->rear = -1;
+		}
+//	}
+        return item;
+}
+void printQueue(struct queue *q) {
+        int i = q->front;
+        if(isEmpty(q)) {
+	        printf("Queue is empty");
+	} else {
+	        printf("\nQueue contains \n");
+	        for(i = q->front; i < q->rear + 1; i++) {
+		        printf("%d ", q->items[i]);
+	        }
+	}    
+}

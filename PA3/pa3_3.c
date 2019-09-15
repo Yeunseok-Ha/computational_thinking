@@ -31,7 +31,7 @@ struct Graph
 	int numVertices;
 	struct node** adjLists;
 	int* visited;
-	int *adj_count, *reachable_a, *reachable_b, *storePare_a, *storePare_b;
+	int *adj_count, *reachable_a, *reachable_b, *storePare_a, *storePare_b, *temp;
 	int temp;
 };
 struct Graph* createGraph(int vertices);
@@ -48,7 +48,7 @@ int main(void)
 	scanf("%d %d %d %d %d",&p, &q, &r, &N, &M);
 	
 	struct Graph *map = createGraph(N);
-	int *temp = malloc(sizeof(int) * N);
+//	int *temp = malloc(sizeof(int) * N);
 
 	for(i = 0; i < N; i++)
 		temp[i] = -1;
@@ -155,6 +155,7 @@ struct Graph* createGraph(int vertices)
 	graph->storePare_a = malloc(vertices * sizeof(int));
 	graph->storePare_b = malloc(vertices * sizeof(int));
 	graph->adj_count = malloc(vertices * sizeof(int));
+	graph->temp = malloc(vertices * sizeof(int));
 
 	int i;
 	for (i = 0; i < vertices; i++) {
@@ -165,6 +166,7 @@ struct Graph* createGraph(int vertices)
 		graph->reachable_b[i] = -1;
 		graph->storePare_a[i] = -1;
 		graph->storePare_b[i] = -1;
+		graph->temp[i] = -1;
 	}
 	
 	return graph;
