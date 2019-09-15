@@ -31,7 +31,7 @@ struct Graph
 	int numVertices;
 	struct node** adjLists;
 	int* visited;
-	int *reachable_a, *reachable_b, *storePare_a, *storePare_b;
+	int *adj_count, *reachable_a, *reachable_b, *storePare_a, *storePare_b;
 	int temp;
 };
 struct Graph* createGraph(int vertices);
@@ -62,10 +62,12 @@ int main(void)
 				k = j;
 				j = map->storePare_a[j];
 			}
-			temp = bfs(map, j, N-1)*r;
-			sum = (map->reachable_a[j]*p) + (map->reachable_b[j]*q) + temp;
-			if(sum < min_fuel)
-				min_fuel = sum;
+			if(map->adj_count[j] >2){
+				temp = bfs(map, j, N-1)*r;
+				sum = (map->reachable_a[j]*p) + (map->reachable_b[j]*q) + temp;
+				if(sum < min_fuel)
+					min_fuel = sum;
+			}
 			//printf("%dth temp : %d sum : %d\n ", i,temp, sum);
 		}
 	}
@@ -148,11 +150,13 @@ struct Graph* createGraph(int vertices)
 	graph->reachable_b = malloc(vertices * sizeof(int));
 	graph->storePare_a = malloc(vertices * sizeof(int));
 	graph->storePare_b = malloc(vertices * sizeof(int));
-			 
+	graph->adj_count = malloc(vertices * sizeof(int));
+
 	int i;
 	for (i = 0; i < vertices; i++) {
 		graph->adjLists[i] = NULL;
 		graph->visited[i] = 0;
+		graph->adj_count[i] = 0;
 		graph->reachable_a[i] = -1;
 		graph->reachable_b[i] = -1;
 		graph->storePare_a[i] = -1;
@@ -168,11 +172,13 @@ void addEdge(struct Graph* graph, int src, int dest)
 	struct node* newNode = createNode(dest);
 	newNode->next = graph->adjLists[src];
 	graph->adjLists[src] = newNode;
+	graph->adj_count[src]++;
 	              
 	// Add edge from dest to src
 	newNode = createNode(src);
 	newNode->next = graph->adjLists[dest];
 	graph->adjLists[dest] = newNode;
+	graph->adj_count[dest]++;
 }
 struct queue* createQueue() {
         struct queue* q = malloc(sizeof(struct queue));
