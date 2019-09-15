@@ -41,30 +41,34 @@ int bfs(struct Graph* graph, int startVertex, int finishVertex);
 int main(void)
 {
 	int min_fuel, sum;
-	int i, j, k, temp, p, q, r, N, M;
+	int i, j, p, q, r, N, M;
 	int from, to;
 	//struct Graph* map = (struct Graph*) malloc(sizeof(struct Graph));
 
 	scanf("%d %d %d %d %d",&p, &q, &r, &N, &M);
 	
 	struct Graph *map = createGraph(N);
+	int *temp = malloc(sizeof(int) * N);
 
+	for(i = 0; i < N; i++)
+		temp[i] = -1;
 	for(i = 0; i < M; i++){
 		scanf("%d %d", &from, &to);
 		addEdge(map, from-1, to-1);
 	}
-	min_fuel = (bfs(map, 0, N-1)*p) +(bfs(map, 1, N-1)*q);
+	temp[0] = (bfs(map, 0, N-1)*p);
+	temp[1] = (bfs(map, 1, N-1)*q);
+	min_fuel = temp[0] + temp[1];
 	
 	for(i = 2; i < N; i++){
 		if((map->storePare_a[i] == map->storePare_b[i])){
 			j = i;
 			while(map->storePare_a[j] == map->storePare_b[j]){
-				k = j;
 				j = map->storePare_a[j];
 			}
-			if(map->adj_count[j] >2){
-				temp = bfs(map, j, N-1)*r;
-				sum = (map->reachable_a[j]*p) + (map->reachable_b[j]*q) + temp;
+			if(map->adj_count[j] >2 && temp[j] == -1){
+				temp[j] = bfs(map, j, N-1)*r;
+				sum = (map->reachable_a[j]*p) + (map->reachable_b[j]*q) + temp[j];
 				if(sum < min_fuel)
 					min_fuel = sum;
 			}
