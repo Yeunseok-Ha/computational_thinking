@@ -48,7 +48,7 @@ int main(void)
 	scanf("%d %d %d %d %d",&p, &q, &r, &N, &M);
 	
 	struct Graph *map = createGraph(N);
-//	int *temp = malloc(sizeof(int) * N);
+	int *temp = malloc(sizeof(int) * N);
 
 	for(i = 0; i < M; i++){
 		scanf("%d %d", &from, &to);
@@ -59,7 +59,7 @@ int main(void)
 	bfs(map, N-1);
 	min_fuel = (map->reachable_a[N-1]*p) + (map->reachable_b[N-1]*q);
 	
-	for(i = 2; i < N; i++){
+/*	for(i = 2; i < N; i++){
 		if((map->storePare_a[i] == map->storePare_b[i])){
 			j = i;
 			while(map->storePare_a[j] == map->storePare_b[j]){
@@ -73,8 +73,26 @@ int main(void)
 			//printf("%dth temp : %d sum : %d\n ", i,temp, sum);
 		}
 	}
-	
+*/
+	for(i = 0; i < N; i ++){
+		if((map->storePare_a[i] == map->storePare_b[i]) && temp[i] != 1){
+			j = i;
+			while(map->storePare_a[j] == map->storePare_b[j]){
+				j = map->storePare_a[j];
+				//temp[j] = 1;
+			}
+			if(map->fromDst[j] != (map->reachable_a[N-1] - map->reachable_a[j]) 
+					|| map->fromDst[j] != (map->reachable_b[N-1] - map->reachable_b[j])
+					&& temp[j] != 1){
+				sum = (map->reachable_a[j]*p) + (map->reachable_b[j]*q) +(map->fromDst[j]*r);
+				if(sum < min_fuel)
+					min_fuel = sum;
+				//temp[j] = 1;
+			}
+		}
+	}	
 	printf("%d", min_fuel);
+	free(temp);
 	free(map);
 	return 0;
 
@@ -115,9 +133,6 @@ void bfs(struct Graph* graph, int startVertex) {
 				graph->visited[adjVertex] = 1;
 				enqueue(q, adjVertex);
 			}
-//			if(adjVertex == finishVertex)
-//				break;
-//			else
 				temp = temp->next;
 		}
 	}
@@ -128,10 +143,8 @@ void bfs(struct Graph* graph, int startVertex) {
 //	for(int i = 0; i < finishVertex+1; i++)
 //		printf("%d \t", graph->storePare_b[i]);
 //	printf("\n");
-//	returnDist = storeDist[finishVertex];
 	free(q);
 	free(storeDist);
-//	return returnDist;
 }
  
 struct node* createNode(int v)
@@ -173,13 +186,11 @@ struct Graph* createGraph(int vertices)
  
 void addEdge(struct Graph* graph, int src, int dest)
 {
-	// Add edge from src to dest
 	struct node* newNode = createNode(dest);
 	newNode->next = graph->adjLists[src];
 	graph->adjLists[src] = newNode;
 	graph->adj_count[src]++;
 	              
-	// Add edge from dest to src
 	newNode = createNode(src);
 	newNode->next = graph->adjLists[dest];
 	graph->adjLists[dest] = newNode;
