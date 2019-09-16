@@ -5,6 +5,7 @@
 #define INF 0x7fffffff
 #define SIZE 40000
 
+int min_fuel = INF;
 struct queue {
 	int items[SIZE];
 	int front;
@@ -33,27 +34,28 @@ struct Graph
 };
 struct Graph* createGraph(int vertices);
 void addEdge(struct Graph* graph, int src, int dest);
-void bfs(struct Graph* graph, int startVertex);
+void bfs(struct Graph* graph, int startVertex, int fuel);
 int main(void)
 {
-	int min_fuel, sum;
+//	int min_fuel, sum;
 	int i, j, p, q, r, N, M;
 	int from, to;
 
 	scanf("%d %d %d %d %d",&p, &q, &r, &N, &M);
 	
 	struct Graph *map = createGraph(N);
-	int *temp = malloc(sizeof(int) * N);
+//	int *temp = malloc(sizeof(int) * N);
 
 	for(i = 0; i < M; i++){
 		scanf("%d %d", &from, &to);
 		addEdge(map, from-1, to-1);
 	}
 
-	bfs(map, N-1);
-	bfs(map, 0);
-	bfs(map, 1);
-	min_fuel = (map->reachable_a[N-1]*p) + (map->reachable_b[N-1]*q);
+//	bfs(map, N-1);
+	bfs(map, 0, p);
+	bfs(map, 1, q);
+	bfs(map, N-1, r);
+//	min_fuel = (map->reachable_a[N-1]*p) + (map->reachable_b[N-1]*q);
 	
 /*	for(i = 2; i < N; i++){
 		if((map->storePare_a[i] == map->storePare_b[i])){
@@ -70,7 +72,7 @@ int main(void)
 		}
 	}
 */
-	for(i = 0; i < N; i ++){
+/*	for(i = 0; i < N; i ++){
 		if((map->storePare_a[i] == map->storePare_b[i]) && temp[i] != 1){
 			j = i;
 			while(map->storePare_a[j] == map->storePare_b[j]){
@@ -87,17 +89,18 @@ int main(void)
 			}
 		}
 	}	
+*/
 	printf("%d", min_fuel);
-	free(temp);
+//	free(temp);
 	free(map);
 	return 0;
 
 }
 
-void bfs(struct Graph* graph, int startVertex) {
+void bfs(struct Graph* graph, int startVertex, int fuel) {
 	int *storeDist = malloc(sizeof(int)*(graph->numVertices));
 	struct queue* q = createQueue();
-	int a = 0;
+	int sum;
 
 	for(int i = 0; i < graph->numVertices; i++){
 		graph->visited[i]=0;
@@ -106,37 +109,38 @@ void bfs(struct Graph* graph, int startVertex) {
 	graph->visited[startVertex] = 1;
 	enqueue(q, startVertex);
 	
-	graph->reachable_a[0] = 0;
-	graph->reachable_b[1] = 0;
+//	graph->reachable_a[0] = 0;
+//	graph->reachable_b[1] = 0;
 
 	while(!isEmpty(q)){
 		int currentVertex = dequeue(q);
 		
 		struct node* temp = graph->adjLists[currentVertex];
-						           
+		int adjVertex = temp->vertex;
+		
 		while(temp) {
-			int adjVertex = temp->vertex;
-			if((startVertex == 0) && (graph->fromDst[0] - graph->fromDst[currentVertex] == graph->reachable_a[currentVertex])){
-				graph->visited[currentVertex] = 1;
-				//break;
-			}else if((startVertex == 1) && (graph->fromDst[1] - graph->fromDst[currentVertex] == graph->reachable_b[currentVertex])){
-				graph->visited[currentVertex] = 1;
-				//break;
-			}
+			adjVertex = temp->vertex;
+//			if((startVertex == 0) && (graph->fromDst[0] - graph->fromDst[adjVertex] == graph->reachable_a[adjVertex])){
+//			}else if((startVertex == 1) && (graph->fromDst[1] - graph->fromDst[adjVertex] == graph->reachable_b[adjVertex])){
+//				graph->visited[adjVertex] = 1;
+//			}
 
 			if(graph->visited[adjVertex] == 0){
 				storeDist[adjVertex] = storeDist[currentVertex]+1;
 				if(startVertex == 0){
-					graph->reachable_a[adjVertex] = storeDist[adjVertex];
+					graph->reachable_a[adjVertex] = storeDist[adjVertex] * fuel;
 					graph->storePare_a[adjVertex] = currentVertex;
 				}
 				else if(startVertex == 1){
-					graph->reachable_b[adjVertex] = storeDist[adjVertex];
+					graph->reachable_b[adjVertex] = storeDist[adjVertex] * fuel;
 					graph->storePare_b[adjVertex] = currentVertex;
 				}else{
-					graph->fromDst[adjVertex] = storeDist[adjVertex];
-					graph->reachable_a[adjVertex] = storeDist[adjVertex];
-					graph->reachable_b[adjVertex] = storeDist[adjVertex];
+					graph->fromDst[adjVertex] = storeDist[adjVertex] * fuel;
+//					graph->reachable_a[adjVertex] = storeDist[adjVertex];
+//					graph->reachable_b[adjVertex] = storeDist[adjVertex];
+					sum = graph->fromDst[adjVertex] + graph->reachable_a[adjVertex] + graph->reachable_b[adjVertex];
+					if(sum < min_fuel)
+						min_fuel = sum;
 				}
 				graph->visited[adjVertex] = 1;
 				enqueue(q, adjVertex);
@@ -146,11 +150,11 @@ void bfs(struct Graph* graph, int startVertex) {
 	}
 	printf("from %d : \n",startVertex);
 	for(int i = 0; i < graph->numVertices; i++)
-		printf("%d \t", storeDist[i]);
+		printf("%d \t", graph->reachable_a[i]);
 	printf("\n");
-//	for(int i = 0; i < graph->numVertices; i++)
-//		printf("%d \t", graph->reachable_b[i]);
-//	printf("\n");
+	for(int i = 0; i < graph->numVertices; i++)
+		printf("%d \t", graph->reachable_b[i]);
+	printf("\n");
 	free(q);
 	free(storeDist);
 }
