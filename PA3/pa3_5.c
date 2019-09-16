@@ -29,7 +29,7 @@ struct Graph
 	int numVertices;
 	struct node** adjLists;
 	int* visited;
-	int *adj_count, *reachable_a, *reachable_b, *storePare_a, *storePare_b, *fromDst;
+	int *adj_count, *reachable_a, *reachable_b, *fromDst;
 	int temp;
 };
 struct Graph* createGraph(int vertices);
@@ -37,60 +37,23 @@ void addEdge(struct Graph* graph, int src, int dest);
 void bfs(struct Graph* graph, int startVertex, int fuel);
 int main(void)
 {
-//	int min_fuel, sum;
 	int i, j, p, q, r, N, M;
 	int from, to;
 
 	scanf("%d %d %d %d %d",&p, &q, &r, &N, &M);
 	
 	struct Graph *map = createGraph(N);
-//	int *temp = malloc(sizeof(int) * N);
 
 	for(i = 0; i < M; i++){
 		scanf("%d %d", &from, &to);
 		addEdge(map, from-1, to-1);
 	}
 
-//	bfs(map, N-1);
 	bfs(map, 0, p);
 	bfs(map, 1, q);
 	min_fuel = (map->reachable_a[N-1]) + (map->reachable_b[N-1]);
 	bfs(map, N-1, r);
-//	min_fuel = (map->reachable_a[N-1]*p) + (map->reachable_b[N-1]*q);
 	
-/*	for(i = 2; i < N; i++){
-		if((map->storePare_a[i] == map->storePare_b[i])){
-			j = i;
-			while(map->storePare_a[j] == map->storePare_b[j]){
-				j = map->storePare_a[j];
-			}
-			if(map->adj_count[j] > 2){
-				sum = (map->reachable_a[j]*p) + (map->reachable_b[j]*q) + (map->fromDst[j]*r);
-				if(sum < min_fuel)
-					min_fuel = sum;
-			}
-			//printf("%dth temp : %d sum : %d\n ", i,temp, sum);
-		}
-	}
-*/
-/*	for(i = 0; i < N; i ++){
-		if((map->storePare_a[i] == map->storePare_b[i]) && temp[i] != 1){
-			j = i;
-			while(map->storePare_a[j] == map->storePare_b[j]){
-				j = map->storePare_a[j];
-				//temp[j] = 1;
-			}
-			if(map->fromDst[j] != (map->reachable_a[N-1] - map->reachable_a[j]) 
-					|| map->fromDst[j] != (map->reachable_b[N-1] - map->reachable_b[j])
-					&& map->adj_count[j] > 2){
-				sum = (map->reachable_a[j]*p) + (map->reachable_b[j]*q) +(map->fromDst[j]*r);
-				if(sum < min_fuel)
-					min_fuel = sum;
-				//temp[j] = 1;
-			}
-		}
-	}	
-*/
 	printf("%d", min_fuel);
 	free(map);
 	return 0;
@@ -122,11 +85,9 @@ void bfs(struct Graph* graph, int startVertex, int fuel) {
 				storeDist[adjVertex] = storeDist[currentVertex]+1;
 				if(startVertex == 0){
 					graph->reachable_a[adjVertex] = storeDist[adjVertex] * fuel;
-					graph->storePare_a[adjVertex] = currentVertex;
 				}
 				else if(startVertex == 1){
 					graph->reachable_b[adjVertex] = storeDist[adjVertex] * fuel;
-					graph->storePare_b[adjVertex] = currentVertex;
 				}else{
 					graph->fromDst[adjVertex] = storeDist[adjVertex] * fuel;
 					sum = graph->fromDst[adjVertex] + graph->reachable_a[adjVertex] + graph->reachable_b[adjVertex];
@@ -139,13 +100,6 @@ void bfs(struct Graph* graph, int startVertex, int fuel) {
 				temp = temp->next;
 		}
 	}
-	printf("from %d : \n",startVertex);
-	for(int i = 0; i < graph->numVertices; i++)
-		printf("%d \t", graph->reachable_a[i]);
-	printf("\n");
-	for(int i = 0; i < graph->numVertices; i++)
-		printf("%d \t", graph->reachable_b[i]);
-	printf("\n");
 	free(q);
 	free(storeDist);
 }
@@ -167,21 +121,12 @@ struct Graph* createGraph(int vertices)
 	graph->visited = malloc(vertices * sizeof(int));
 	graph->reachable_a = malloc(vertices * sizeof(int));
 	graph->reachable_b = malloc(vertices * sizeof(int));
-	graph->storePare_a = malloc(vertices * sizeof(int));
-	graph->storePare_b = malloc(vertices * sizeof(int));
-	graph->adj_count = malloc(vertices * sizeof(int));
 	graph->fromDst = malloc(vertices * sizeof(int));
 
 	int i;
 	for (i = 0; i < vertices; i++) {
 		graph->adjLists[i] = NULL;
 		graph->visited[i] = 0;
-		graph->adj_count[i] = 0;
-//		graph->reachable_a[i] = -1;
-//		graph->reachable_b[i] = -1;
-		graph->storePare_a[i] = -1;
-		graph->storePare_b[i] = -1;
-//		graph->fromDst[i] = -1;
 	}
 	
 	return graph;
@@ -192,12 +137,10 @@ void addEdge(struct Graph* graph, int src, int dest)
 	struct node* newNode = createNode(dest);
 	newNode->next = graph->adjLists[src];
 	graph->adjLists[src] = newNode;
-	graph->adj_count[src]++;
 	              
 	newNode = createNode(src);
 	newNode->next = graph->adjLists[dest];
 	graph->adjLists[dest] = newNode;
-	graph->adj_count[dest]++;
 }
 struct queue* createQueue() {
         struct queue* q = malloc(sizeof(struct queue));
