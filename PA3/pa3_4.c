@@ -116,11 +116,13 @@ void bfs(struct Graph* graph, int startVertex) {
 						           
 		while(temp) {
 			int adjVertex = temp->vertex;
-//			if((startVertex == 0) && (graph->fromDst[0] - graph->fromDst[currentVertex] == graph->reachable_a[currentVertex])){
-//				break;
-//			}else if((startVertex == 1) && (graph->fromDst[1] - graph->fromDst[currentVertex] == graph->reachable_b[currentVertex])){
-//				break;
-//			}
+			if((startVertex == 0) && (graph->fromDst[0] - graph->fromDst[currentVertex] == graph->reachable_a[currentVertex])){
+				graph->visited[currentVertex] = 1;
+				//break;
+			}else if((startVertex == 1) && (graph->fromDst[1] - graph->fromDst[currentVertex] == graph->reachable_b[currentVertex])){
+				graph->visited[currentVertex] = 1;
+				//break;
+			}
 
 			if(graph->visited[adjVertex] == 0){
 				storeDist[adjVertex] = storeDist[currentVertex]+1;
@@ -133,8 +135,8 @@ void bfs(struct Graph* graph, int startVertex) {
 					graph->storePare_b[adjVertex] = currentVertex;
 				}else{
 					graph->fromDst[adjVertex] = storeDist[adjVertex];
-//					graph->reachable_a[adjVertex] = storeDist[adjVertex];
-//					graph->reachable_b[adjVertex] = storeDist[adjVertex];
+					graph->reachable_a[adjVertex] = storeDist[adjVertex];
+					graph->reachable_b[adjVertex] = storeDist[adjVertex];
 				}
 				graph->visited[adjVertex] = 1;
 				enqueue(q, adjVertex);
