@@ -10,7 +10,7 @@ int moveLeft(int a);
 int moveRight(int a);
 int main(void)
 {
-	int i, j, k, tmp, rod_num, num_disks, dst;
+	int i, j, state, compare, tmp, rod_num, num_disks, dst;
 	long count;
 	int **rod = malloc(3*sizeof(int));
 	scanf("%d %d", &num_disks, &dst);	
@@ -28,7 +28,7 @@ int main(void)
 			rod[i][j] = tmp;
 		}
 	}
-	i = 0; j = 0; k = 0; tmp = num_disks;
+	i = 0; j = 0; tmp = num_disks;
 	int *exist = malloc(num_disks * sizeof(int));
 	
 	if(dst != 3)
@@ -51,38 +51,31 @@ int main(void)
 		}
 	}
 	int *goal = malloc(num_disks*sizeof(int));
-	for(i = 0; i < num_disks; i++){
-//		if(isEven(i+1))
-			goal[i] = 3;
-//		else
-//			goal[i] = 2;
-	}
-
+//	for(i = 0; i < num_disks; i++){
+//			goal[i] = 3;
+//	}
+	state = 3;
+	compare = 3;
 	count = 0;
 	i = num_disks-1;
 	while(i>=0){
-//		if (isEven(i+1)){
-			if(exist[i] != goal[i]){
-				if(exist[i] == moveRight(goal[i])){
-					goal[i] = moveRight(goal[i]);
-					for(j = 0; j < i; j++)
-						goal[j] = moveLeft(goal[j]);
-
-				} else if(exist[i] == moveLeft(goal[i])){
-					goal[i] = moveLeft(goal[i]);
-					for(j = 0; j < i; j++)
-						goal[j] = moveRight(goal[j]);
-				}
-				if(i ==0)
-					count++;
-				else
-					count += min_step[i-1]+1;
-//				printf("%ld\n",count);	
+		if(exist[i] != state){
+			if(exist[i] == moveRight(state)){
+				state = moveLeft(state);
+//				for(j = 0; j < i; j++)
+//					goal[j] = moveLeft(goal[j]);
+//				compare = moveLeft(compare);
+			} else if(exist[i] == moveLeft(state)){
+				state = moveRight(state);
+//				for(j = 0; j < i; j++)
+//					goal[j] = moveRight(goal[j]);
 			}
-				i--;
-//		} else{
-
-//		}
+			if(i ==0)
+				count++;
+			else
+				count += min_step[i-1]+1;
+		}
+		i--;
 	}
 	
 	
@@ -94,6 +87,8 @@ int main(void)
 
 	printf("%ld", count);
 	free(rod);
+	free(goal);
+	free(exist);
 	return 0;
 }
 
