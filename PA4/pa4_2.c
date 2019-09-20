@@ -19,44 +19,19 @@ int main(void)
 	min_step[0] = 1;
 	for(i = 1; i < num_disks; i++)
 		min_step[i] = 2*min_step[i-1] +1;
-
+	int *exist = malloc(num_disks * sizeof(int));
 	for(i = 0; i<3; i++){
-		rod[i] = (int*)malloc(num_disks*sizeof(int));
 		scanf("%d ", &rod_num);
+		if(rod_num ==0)
+			scanf("%d", &tmp);
 		for(j=0; j < rod_num; j++){
 			scanf("%d", &tmp);
-			rod[i][j] = tmp;
+			exist[tmp-1] = i+1;
 		}
 	}
-	i = 0; j = 0; tmp = num_disks;
-	int *exist = malloc(num_disks * sizeof(int));
-	
-//	if(dst != 3)
-//		swap(rod[2], rod[dst-1], num_disks);
-//	if(rod[1][0] == num_disks)
-//		swap(rod[0], rod[1], num_disks);
 
-	while(tmp){
-		if(rod[0][i] == tmp){
-			exist[tmp-1] = 1;
-			i++;
-			tmp--;
-		}else if(rod[1][j] == tmp){
-			exist[tmp-1] = 2;
-			j++;
-			tmp--;
-		}else{
-			exist[tmp-1] = 3;
-			tmp--;
-		}
-	}
-//	int *goal = malloc(num_disks*sizeof(int));
-//	for(i = 0; i < num_disks; i++){
-//			goal[i] = 3;
-//	}
+	count = 0;	
 	state = dst;
-	compare = 3;
-	count = 0;
 	i = num_disks-1;
 	while(i>=0){
 		if(exist[i] != state){
@@ -82,13 +57,14 @@ int main(void)
 	
 	
 //		for(j = 0; j < num_disks; j++)
-//			printf("%d ", goal[j]);
+//			printf("%d ", exist[j]);
 //		printf("\n");
 
 	printf("%ld", count);
 	free(rod);
 //	free(goal);
 	free(exist);
+	free(min_step);
 	return 0;
 }
 
