@@ -4,29 +4,37 @@
 
 int main(void)
 {
-	int n, h, w, tmp, count;
+	int n, tmp, count;
 
 	scanf("%d", &n);
-	int*** polyominos = (int***)malloc(n*sizeof(int**));
+	int*** polyominos = (int***)malloc(n * sizeof(int**));
+	int *h = malloc(n*sizeof(int));
+	int *w = malloc(n*sizeof(int));
 
 	count = 0;
-	for(int i = 0; i < n; i++){
-		scanf("%d %d", &h, &w);
-		polyominos[i] = (int**)malloc(h*sizeof(int*));
-		for(int j = 0; j < h; j++){
-			polyominos[i][h] = (int*)malloc(w*sizeof(int));
-			for(int k = 0; k < w; k++){
+	for (int i = 0; i < n; i++) {
+		scanf("%d %d", &h[i], &w[i]);
+		polyominos[i] = (int**)malloc(h[i] * sizeof(int*));
+		for (int j = 0; j < h[i]; j++) {
+			polyominos[i][j] = (int*)malloc(w[i]*sizeof(int));
+			for (int k = 0; k < w[i]; k++) {
 				scanf("%d", &tmp);
-				if(tmp==1){
-					polyominos[i][h][w] = tmp+i;
+				if (tmp == 1) {
+					polyominos[i][j][k] = tmp*(i+1);
 					count++;
 				}
 			}
 		}
-
-
 	}
-
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < h[i]; j++) {
+			for (int k = 0; k < w[i]; k++) {
+				printf("%d ", polyominos[i][j][k]);
+			}
+			printf("\n");
+		}
+		printf("\n");
+	}
 
 
 //	if(sqrt(count)*sqrt(count) != (double)count){
@@ -40,6 +48,8 @@ int main(void)
 		printf("No solution possible");
 	}
 
+	free(h);
+	free(w);
 	free(polyominos);
 	return 0;
 }
