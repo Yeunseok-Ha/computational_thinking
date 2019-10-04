@@ -18,29 +18,19 @@ int main(void)
 	
 	merge_sort(xi, 0, n-1);	
 	for(int i = 0; i < n-1; i++)
-		dist[i] = xi[i+1] - xi[i];	
-	min_dist = (xi[n-1] - xi[0])/(k-1);
-	valid = 0;
-	count = 2;
+		dist[i] = xi[i+1] - xi[i];
 
-	distance = min_dist;
+	merge_sort(dist, 0, n-2);
+	min_dist = dist[n-k+1];
 	accum_dist = 0;
-	for(int i = 0; i < n-1; i++){
-		if(accum_dist + dist[i] <= distance){
-			accum_dist += dist[i];
-			valid = 1;
-		}else{
-			if(!valid)
-				accum_dist = dist[i];
-			if(accum_dist < min_dist)
-				min_dist = accum_dist;
-			accum_dist = 0;
-			count++;
-			if(count == k)
-				break;
-		}
-	}
-
+	for(int i = 0; i < n-k+1; i++)
+		accum_dist += dist[i];
+	if(accum_dist < min_dist)
+		min_dist = accum_dist;
+	
+	free(xi);
+	free(xi_sorted);
+	free(dist);
 	printf("%lld", min_dist);
 	return 0;
 }
