@@ -1,6 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+struct dist{
+	int from;
+	int to;
+	long long distance;
+}
+
 int* xi_sorted;
 void merge(int* xi, int left, int mid, int right);
 void merge_sort(int* xi, int left, int right);
